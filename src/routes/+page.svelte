@@ -1,3 +1,17 @@
+<script>
+	import { speechCommand } from '$lib/execute';
+
+	let clicked = false;
+	function click() {
+		clicked = true;
+	}
+</script>
+
 <h1>Welcome to your library project</h1>
-<p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+
+{#if !clicked}
+	<button on:click={click} use:speechCommand={'click'}>Say "Click"</button>
+{/if}
+{#if clicked}
+	<p>Clicked!</p>
+{/if}

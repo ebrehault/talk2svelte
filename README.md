@@ -1,38 +1,22 @@
-# create-svelte
+# Talk2Svelte
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This library provides voice recognition for Svelte.
 
-## Creating a project
+It uses the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API).
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Why?
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+- Accessibility matters, and voice recognition is a great way to make your app more accessible in many contexts (e.g. if you have difficulties with your hands and/or fingers, if you are driving, etc.).
+- Websites are primarily used on smartphones, and although we tend to forget this for years, phones were originally designed to be used by voice (yes, for real, and in fact, phone comes from the Greek phōnē "sound, voice").
+- Web Speech API is fun!
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+More seriously about accessibility: obviously voice recognition may be not accessible in many contexts, e.g. if you are mute, if you have difficulties with pronunciation (I am French, I know what I am talking about), if you are in a noisy environment, etc. Remember there is no one-fit-all solution to make your website accessible, and voice recognition is not a replacement for other accessibility features, but it is a great addition to them.
 
-## Developing
+## What does it do?
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Usual interactions like clicking on buttons or links or using form controls can be done by speaking to the browser.
 
-```bash
-npm run dev
+## How does it work?
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+You define a list of commands, and the library will listen to the user's voice and execute the corresponding command.
+A Svelte component allows to declare new commands, and they can be grouped into contexts (like the "menu" context will give access to the commands defined in the menu).
