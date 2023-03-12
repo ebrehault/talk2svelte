@@ -8,7 +8,30 @@
 	let destination = '';
 	let inputValue = '';
 	let recording = false;
+	let currentRow = 1;
+	let currentCol = 1;
 	const context = SpeechStore.currentContext;
+
+	function up() {
+		if (currentRow > 1) {
+			currentRow--;
+		}
+	}
+	function down() {
+		if (currentRow < 4) {
+			currentRow++;
+		}
+	}
+	function left() {
+		if (currentCol > 1) {
+			currentCol--;
+		}
+	}
+	function right() {
+		if (currentCol < 4) {
+			currentCol++;
+		}
+	}
 
 	onMount(() => {
 		SpeechSettings.declareCommand('record');
@@ -37,47 +60,26 @@
 
 <h1>Examples</h1>
 
-<h2>Click on links or buttons</h2>
-<p>
-	To associate a speech command to the <code>click</code> event of any HTML element, you need to use
-	the <code>speechCommand</code> directive:
-</p>
-<blockquote>
-	<code>&lt;script&gt;</code><br />
-	<code>&nbsp;&nbsp;import &#123; speechCommand } from 'talk2svelte';</code><br />
-	<code>&nbsp;&nbsp;function doStart() &#123;…}</code><br />
-	<code>&lt;/script&gt;</code><br />
-	<code
-		>&lt;button <strong>use:speechCommand="start"</strong> on:click=&#123;doStart()}&gt;Say "start"&lt;/button&gt;</code
-	>
-</blockquote>
+<h2>Click on buttons</h2>
 
 <p>
-	By doing <code>use:speechCommand="start"</code>, you are telling Talk2Svelte to listen for the
-	command "start" and to trigger the <code>click</code> event on the button when the command is recognized.
+	Move the selected cell by saying
+	<button use:speechCommand={'up'} on:click={up}>Up</button>,
+	<button use:speechCommand={'down'} on:click={down}>Down</button>,
+	<button use:speechCommand={'left'} on:click={left}>Left</button>, or
+	<button use:speechCommand={'right'} on:click={right}>Right</button>.
 </p>
-<p>It works the same with links:</p>
-<blockquote>
-	<code
-		>&lt;a <strong>use:speechCommand="about"</strong> href="/about"&gt;About this project&lt;/a&gt;</code
-	>
-</blockquote>
-<p>The default event is <code>click</code>, but you can trigger a different one like this:</p>
-<blockquote>
-	<code
-		>&lt;button <strong>use:speechCommand=&#123;command: 'start', event: 'mouseover'}</strong> on:click=&#123;doStart()}&gt;Say
-		"start"&lt;/button&gt;</code
-	>
-</blockquote>
+<table>
+	{#each [1, 2, 3, 4] as row}
+		<tr>
+			{#each [1, 2, 3, 4] as col}
+				<td class:selected={row === currentRow && col === currentCol} />
+			{/each}
+		</tr>
+	{/each}
+</table>
 
 <h2>Define contexts</h2>
-<p>
-	Since commands are easier to use if they are short, it is possible that there will be overlaps
-	between the different commands declared in your application.
-</p>
-<p>
-	To avoid that, you can use contexts. Defining contexts allows to group some commands together.
-</p>
 <p>
 	In the following example, the 2 lists contain the same list of cities, but by saying "origin" or
 	"destination" before saying the city name, you set the proper context.
@@ -137,24 +139,6 @@
 	</div>
 </div>
 
-<p>
-	A context is declared by prefixing the command, like <code
-		>use:speechCommand=&#123;destination/paris}</code
-	> will declare "destination" as a context where "paris" is one of the possible commands.
-</p>
-
-<p>
-	As you can see, the current context is highlighted. It is usually helpful to make the context
-	visible. It can be achieve using <code>SpeechStore.currentContext</code>
-</p>
-<blockquote>
-	<code>&lt;script&gt;</code><br />
-	<code>&nbsp;&nbsp;import &#123; SpeechStore } from 'talk2svelte';</code><br />
-	<code>&nbsp;&nbsp;const context = SpeechStore.currentContext;</code><br />
-	<code>&lt;/script&gt;</code><br />
-	<code>&lt;div class:is-context=&#123;$context === 'origin'}&gt;…&lt;/div&gt;</code>
-</blockquote>
-
 <h2>Free-text input</h2>
 <p>You can also use Talk2Svelte to fill in a text input.</p>
 <p>Say "record" to start entering text in this input, then say "stop" when you are done.</p>
@@ -183,5 +167,9 @@
 	textarea {
 		width: 100%;
 		height: 100px;
+	}
+	td {
+		padding: 1em;
+		border: 1px solid var(--color-accent-primary-default);
 	}
 </style>

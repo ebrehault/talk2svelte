@@ -1,3 +1,6 @@
+h2 {
+	margin-top: 1em;
+}
 .is-context {
 	border: 2px dashed var(--color-accent-primary-default);
 }
