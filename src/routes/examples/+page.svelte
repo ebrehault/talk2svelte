@@ -53,6 +53,8 @@
 			)
 			.subscribe((message) => (inputValue = message));
 		return () => {
+			SpeechSettings.removeCommand('record');
+			SpeechSettings.removeCommand('stop');
 			subscription.unsubscribe();
 		};
 	});

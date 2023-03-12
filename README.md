@@ -131,6 +131,8 @@ The `SpeechStore` provides commands but also the full message recognized by the 
 			)
 			.subscribe((message) => (inputValue = message));
 		return () => {
+			SpeechSettings.removeCommand('record');
+			SpeechSettings.removeCommand('stop');
 			subscription.unsubscribe();
 		};
 	});
@@ -139,7 +141,7 @@ The `SpeechStore` provides commands but also the full message recognized by the 
 ```
 
 Note: as you do not want the browser to fill in the text input with whatever the user is saying, you need to declare the commands "record" and "stop" to start and stop the recording.
-Declaring commands programmatically can be done with `SpeechSettings.declareCommand()`.
+Declaring commands programmatically can be done with `SpeechSettings.declareCommand()`. And when the component is unmounted, you need to remove the commands with `SpeechSettings.removeCommand()` to make sure we do not interfere with commands declared in next pages.
 
 ### Set the language
 

@@ -34,8 +34,8 @@
 				<span><strong class="pa-chip error">Error</strong> {$error}</span>
 			{/if}
 		{:else}
-			<span class="pa-chip">Current context: {$context || '…'}</span>
-			<span class="pa-chip"> Current command: {$command || '…'}</span>
+			<span class="pa-chip">Current context: {$context || '–'}</span>
+			<span class="pa-chip"> Current command: {$command || '–'}</span>
 		{/if}
 		<nav class:is-context={$context === 'menu'}>
 			<a href="/" use:speechCommand={'menu/home'} class:active={$page.url.pathname === '/'}>Home</a>
