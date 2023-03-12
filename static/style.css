@@ -1,0 +1,3 @@
+.is-context {
+	border: 2px dashed var(--color-accent-primary-default);
+}

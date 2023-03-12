@@ -1,22 +1,23 @@
-import { BehaviorSubject, debounceTime, Subject } from 'rxjs';
+import { BehaviorSubject, debounceTime, map, Subject } from 'rxjs';
 
 let recognition: any;
 let lang = 'en-US';
-const DEFAULT_GRAMMAR = `#JSGF V1.0; grammar Digits;
-public <Digits> = ( <digit> ) + ;
-<digit> = ( zero | one | two | three | four | five | six | seven | eight | nine );`;
+const DEFAULT_GRAMMAR = `#JSGF V1.0;`;
 const commands: { [context: string]: boolean } = {};
 const refreshGrammar = new Subject<void>();
 const _isStarted = new BehaviorSubject(false);
 const _message = new BehaviorSubject<Message>({ message: '' });
 const _context = new BehaviorSubject<string>('');
 const _command = new BehaviorSubject<string>('');
+const _lang = new BehaviorSubject<string>(lang);
 
 export const SpeechStore = {
 	isStarted: _isStarted.asObservable(),
 	message: _message.asObservable(),
 	currentContext: _context.asObservable(),
-	currentCommand: _command.asObservable()
+	currentCommand: _command.asObservable(),
+	error: _message.pipe(map((m) => (m.error ? m.message : ''))),
+	lang: _lang.asObservable()
 };
 
 interface Message {
@@ -39,28 +40,28 @@ const init = () => {
 			const result = event.results[event.resultIndex];
 			if (result.isFinal) {
 				if (result[0].confidence < 0.3) {
-					msg = { error: true, message: 'Cannot recognize' };
+					msg = { error: true, message: 'not_recognized' };
 				} else {
 					word = result[0].transcript.trim().toLowerCase();
-					msg = { success: true, message: word };
+					msg = { message: word };
 				}
-			}
-		}
-		_message.next(msg);
-		if (!msg.error) {
-			const ctx = getContext(word);
-			if (ctx) {
-				_context.next(ctx);
-				_command.next('');
-			} else {
-				const command = getCommand(word);
-				if (command) {
-					_command.next(command);
-				} else {
-					const globalCommand = getGlobalCommand(word);
-					if (globalCommand) {
-						_command.next(globalCommand);
-						_context.next('');
+				_message.next(msg);
+				if (!msg.error) {
+					const ctx = getContext(word);
+					if (ctx) {
+						_context.next(ctx);
+						_command.next('');
+					} else {
+						const command = getCommand(word);
+						if (command) {
+							_command.next(command);
+						} else {
+							const globalCommand = getGlobalCommand(word);
+							if (globalCommand) {
+								_command.next(globalCommand);
+								_context.next('');
+							}
+						}
 					}
 				}
 			}
@@ -68,8 +69,14 @@ const init = () => {
 	};
 
 	recognition.onerror = (error: any) => {
-		console.log('Error', error);
-		_message.next({ error: true });
+		console.error('Error', error);
+		_message.next({
+			error: true,
+			message:
+				error.error === 'network'
+					? 'Your browser cannot use the SpeechRecognition API'
+					: error.error
+		});
 	};
 	recognition.onstart = () => {
 		console.log('Voice recognition started');
@@ -134,7 +141,15 @@ function getContextualPath(word: string): string {
 }
 
 export const SpeechSettings = {
-	setLang: (newLang: string) => (lang = newLang),
+	setLang: (newLang: string) => {
+		lang = newLang;
+		recognition.stop();
+		init();
+		setTimeout(() => {
+			recognition.start();
+			_lang.next(lang);
+		}, 500);
+	},
 	start: () => recognition.start(),
 	stop: () => recognition.stop(),
 	init,

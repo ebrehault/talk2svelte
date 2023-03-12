@@ -10,7 +10,7 @@ It uses the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/We
 - Websites are primarily used on smartphones, and although we tend to forget this for years, phones were originally designed to be used by voice (yes, for real, and in fact, phone comes from the Greek phōnē "sound, voice").
 - Web Speech API is fun!
 
-More seriously about accessibility: obviously voice recognition may be not accessible in many contexts, e.g. if you are mute, if you have difficulties with pronunciation (I am French, I know what I am talking about), if you are in a noisy environment, etc. Remember there is no one-fit-all solution to make your website accessible, and voice recognition is not a replacement for other accessibility features, but it is a great addition to them.
+More seriously about accessibility: obviously voice recognition may be not accessible in many contexts, e.g. if you are mute, if you have difficulties with pronunciation in a given language (I am French, I know what I am talking about), if you are in a noisy environment, etc. Remember there is no one-fit-all solution to make your website accessible, and voice recognition is not a replacement for other accessibility features, but it is a great addition to them.
 
 ## What does it do?
 
@@ -18,5 +18,9 @@ Usual interactions like clicking on buttons or links or using form controls can 
 
 ## How does it work?
 
-You define a list of commands, and the library will listen to the user's voice and execute the corresponding command.
-A Svelte component allows to declare new commands, and they can be grouped into contexts (like the "menu" context will give access to the commands defined in the menu).
+You associate the elements of your web app to commands, and the library will listen to the user's voice and execute the corresponding command.
+A Svelte `use` directive allows to declare commands, and they can be grouped into contexts (for example, the "menu" context would give access to the commands defined in the menu).
+
+## Caveats
+
+The Web Speech API is not supported by all browsers, it is not supported by Firefox or Edge. Also on non-Chrome Chromium based browsers, the speech recognition might not work as expected (for example on Brave).
