@@ -1,5 +1,5 @@
 import { filter } from 'rxjs';
-import { SpeechStore, SpeechSettings } from '../lib/store';
+import { SpeechStore, SpeechSettings } from './store';
 
 export function speechCommand(node: Node, params: string | { command: string; event: string }) {
 	const command = typeof params === 'string' ? params : params.command;

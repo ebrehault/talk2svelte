@@ -21,7 +21,7 @@ Usual interactions like clicking on buttons or links or filling in text inputs c
 ### Install
 
 ```bash
-npm install talk2svelte
+npm install talk2svelte rxjs
 ```
 
 ### Initialize / start / stop
@@ -31,7 +31,7 @@ To use Talk2Svelte, you need to initialize it with `SpeechSettings.init()`.
 Then you can start and stop the recognition with `SpeechSettings.start()` and `SpeechSettings.stop()`.:
 
 ```js
-import { SpeechSettings } from '../lib/store';
+import { SpeechSettings } from 'talk2svelte';
 import { onMount } from 'svelte';
 import { browser } from '$app/environment';
 
