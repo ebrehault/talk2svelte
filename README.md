@@ -4,6 +4,8 @@ This library provides voice recognition for Svelte.
 
 It uses the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API).
 
+Check the [demo](https://talk2svelte.vercel.app/)!
+
 ## Why?
 
 - Accessibility matters, and voice recognition is a great way to make your app more accessible in many contexts (e.g. if you have difficulties with your hands and/or fingers, if you are driving, etc.).
