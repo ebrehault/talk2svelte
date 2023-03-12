@@ -1,10 +1,38 @@
 <script lang="ts">
 	import { speechCommand } from '$lib/execute';
-	import { SpeechStore } from '$lib/store';
+	import { SpeechSettings, SpeechStore } from '$lib/store';
+	import { filter, skipUntil, takeUntil, tap } from 'rxjs';
+	import { onMount } from 'svelte';
 
 	let origin = '';
 	let destination = '';
+	let inputValue = '';
+	let recording = false;
 	const context = SpeechStore.currentContext;
+
+	onMount(() => {
+		SpeechSettings.declareCommand('record');
+		SpeechSettings.declareCommand('stop');
+		const subscription = SpeechStore.message
+			.pipe(
+				skipUntil(
+					SpeechStore.currentCommand.pipe(
+						filter((command) => command === 'record'),
+						tap(() => (recording = true))
+					)
+				),
+				takeUntil(
+					SpeechStore.currentCommand.pipe(
+						filter((command) => command === 'stop'),
+						tap(() => (recording = false))
+					)
+				)
+			)
+			.subscribe((message) => (inputValue = message));
+		return () => {
+			subscription.unsubscribe();
+		};
+	});
 </script>
 
 <h1>Examples</h1>
@@ -127,6 +155,16 @@
 	<code>&lt;div class:is-context=&#123;$context === 'origin'}&gt;…&lt;/div&gt;</code>
 </blockquote>
 
+<h2>Free-text input</h2>
+<p>You can also use Talk2Svelte to fill in a text input.</p>
+<p>Say "record" to start entering text in this input, then say "stop" when you are done.</p>
+<div class="textarea-container" class:is-context={recording}>
+	{#if recording}
+		<div>Recording…</div>
+	{/if}
+	<textarea>{inputValue}</textarea>
+</div>
+
 <style>
 	.selected {
 		background-color: var(--color-accent-primary-default);
@@ -138,5 +176,12 @@
 	.container > div {
 		width: 50%;
 		padding: 1em;
+	}
+	.textarea-container {
+		padding: 1em;
+	}
+	textarea {
+		width: 100%;
+		height: 100px;
 	}
 </style>

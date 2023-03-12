@@ -54,7 +54,7 @@
 
 <style>
 	.page {
-		margin: 0 2em;
+		margin: 0 2em 2em 2em;
 	}
 	.error {
 		color: var(--color-neutral-primary-lightest);

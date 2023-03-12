@@ -6,7 +6,8 @@ const DEFAULT_GRAMMAR = `#JSGF V1.0;`;
 const commands: { [context: string]: boolean } = {};
 const refreshGrammar = new Subject<void>();
 const _isStarted = new BehaviorSubject(false);
-const _message = new BehaviorSubject<Message>({ message: '' });
+const _message = new BehaviorSubject<string>('');
+const _error = new BehaviorSubject<Error>({ error: false, message: '' });
 const _context = new BehaviorSubject<string>('');
 const _command = new BehaviorSubject<string>('');
 const _lang = new BehaviorSubject<string>(lang);
@@ -16,12 +17,12 @@ export const SpeechStore = {
 	message: _message.asObservable(),
 	currentContext: _context.asObservable(),
 	currentCommand: _command.asObservable(),
-	error: _message.pipe(map((m) => (m.error ? m.message : ''))),
+	error: _error.pipe(map((m) => (m.error ? m.message : ''))),
 	lang: _lang.asObservable()
 };
 
-interface Message {
-	error?: boolean;
+interface Error {
+	error: boolean;
 	message?: string;
 }
 
@@ -34,19 +35,22 @@ const init = () => {
 	recognition.continuous = true;
 
 	recognition.onresult = (event: any) => {
-		let msg: Message = { message: '' };
+		let msg = '';
+		let error: Error = { error: false, message: '' };
 		let word = '';
 		if (event.results) {
 			const result = event.results[event.resultIndex];
-			if (result.isFinal) {
+			if (!result.isFinal) {
+				_message.next(event.results.map((r: any) => r[0].transcript).join(' '));
+			} else {
 				if (result[0].confidence < 0.3) {
-					msg = { error: true, message: 'not_recognized' };
+					error = { error: true, message: 'not_recognized' };
 				} else {
 					word = result[0].transcript.trim().toLowerCase();
-					msg = { message: word };
+					msg = word;
+					error = { error: false };
 				}
-				_message.next(msg);
-				if (!msg.error) {
+				if (!error.error) {
 					const ctx = getContext(word);
 					if (ctx) {
 						_context.next(ctx);
@@ -60,6 +64,9 @@ const init = () => {
 							if (globalCommand) {
 								_command.next(globalCommand);
 								_context.next('');
+							} else {
+								_command.next('');
+								_message.next(msg);
 							}
 						}
 					}
@@ -70,7 +77,7 @@ const init = () => {
 
 	recognition.onerror = (error: any) => {
 		console.error('Error', error);
-		_message.next({
+		_error.next({
 			error: true,
 			message:
 				error.error === 'network'

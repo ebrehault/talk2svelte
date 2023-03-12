@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { speechCommand } from '$lib/execute';
-	import { SpeechSettings } from '$lib/store';
+	import { SpeechSettings, SpeechStore } from '$lib/store';
 
 	let lang = 'en-GB';
 	let showDuck = false;
