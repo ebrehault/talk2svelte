@@ -2,6 +2,8 @@ import { BehaviorSubject, debounceTime, map, Subject } from 'rxjs';
 
 let recognition: any;
 let lang = 'en-US';
+let legitStop = false;
+
 const DEFAULT_GRAMMAR = `#JSGF V1.0;`;
 const commands: { [context: string]: boolean } = {};
 const refreshGrammar = new Subject<void>();
@@ -90,7 +92,15 @@ const init = (start = false) => {
 		_isStarted.next(true);
 		refreshGrammar.next();
 	};
-	recognition.onend = () => _isStarted.next(false);
+	recognition.onend = () => {
+		if (legitStop) {
+			_isStarted.next(false);
+			legitStop = false;
+		} else {
+			console.log('Unexpected end of recognition, restarting');
+			recognition.start();
+		}
+	};
 
 	refreshGrammar.pipe(debounceTime(500)).subscribe(() => setGrammar());
 	if (start) {
@@ -150,10 +160,15 @@ function getContextualPath(word: string): string {
 	return currentContext ? `${currentContext}/${word}` : `${word}`;
 }
 
+function stop() {
+	legitStop = true;
+	recognition.stop();
+}
+
 export const SpeechSettings = {
 	setLang: (newLang: string) => {
 		lang = newLang;
-		recognition.stop();
+		stop();
 		init();
 		setTimeout(() => {
 			recognition.start();
@@ -161,7 +176,7 @@ export const SpeechSettings = {
 		}, 500);
 	},
 	start: () => recognition.start(),
-	stop: () => recognition.stop(),
+	stop,
 	init,
 	declareCommand,
 	removeCommand

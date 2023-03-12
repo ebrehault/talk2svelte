@@ -158,3 +158,5 @@ SpeechSettings.setLang('fr-FR');
 - The Web Speech API is not supported by all browsers, it is not supported by Firefox or Edge. Also on non-Chrome Chromium based browsers, the speech recognition might not work as expected (for example on Brave).
 
 - If you get an error like `ReferenceError: window is not defined`, it means you are trying to use Talk2Svelte in a server-side rendered app. Talk2Svelte is not compatible with SSR. You must check you are in a browser environment before initializing Talk2Svelte (as shown in the example above).
+
+- On some mobiles, it seems the speech recognition service stops unexpectedly. Speak2Svelte restarts it automatically, but it can be annoying because the phone will do a small notification sound everytime. If you have a solution to this problem, please let me know!
