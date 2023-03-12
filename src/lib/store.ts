@@ -26,7 +26,7 @@ interface Error {
 	message?: string;
 }
 
-const init = () => {
+const init = (start = false) => {
 	const SpeechRecognition = window['SpeechRecognition'] || window['webkitSpeechRecognition'];
 	recognition = new SpeechRecognition();
 	recognition.lang = lang;
@@ -93,6 +93,9 @@ const init = () => {
 	recognition.onend = () => _isStarted.next(false);
 
 	refreshGrammar.pipe(debounceTime(500)).subscribe(() => setGrammar());
+	if (start) {
+		recognition.start();
+	}
 };
 
 function declareCommand(command: string): void {
