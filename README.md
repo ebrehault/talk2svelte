@@ -21,7 +21,7 @@ Usual interactions like clicking on buttons or links or filling in text inputs c
 ### Install
 
 ```bash
-npm install talk2svelte rxjs
+npm install talk2svelte
 ```
 
 ### Initialize / start / stop
@@ -153,4 +153,6 @@ SpeechSettings.setLang('fr-FR');
 
 ## Caveats
 
-The Web Speech API is not supported by all browsers, it is not supported by Firefox or Edge. Also on non-Chrome Chromium based browsers, the speech recognition might not work as expected (for example on Brave).
+- The Web Speech API is not supported by all browsers, it is not supported by Firefox or Edge. Also on non-Chrome Chromium based browsers, the speech recognition might not work as expected (for example on Brave).
+
+- If you get an error like `ReferenceError: window is not defined`, it means you are trying to use Talk2Svelte in a server-side rendered app. Talk2Svelte is not compatible with SSR. You must check you are in a browser environment before initializing Talk2Svelte (as shown in the example above).
