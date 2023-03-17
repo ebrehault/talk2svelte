@@ -21,12 +21,14 @@
 
 <div class="page">
 	<header>
-		{#if $isSpeechStarted}
-			<Icon size="large" clickable icon="volume" on:click={SpeechSettings.stop} />
-			<span>{$lang}</span>
-		{:else}
-			<Icon size="large" clickable icon="volume-off" on:click={SpeechSettings.start} />
-		{/if}
+		<span class="icon" class:on={$isSpeechStarted}>
+			{#if $isSpeechStarted}
+				<Icon size="large" clickable icon="microphone" on:click={SpeechSettings.stop} />
+				<span>{$lang}</span>
+			{:else}
+				<Icon size="large" clickable icon="microphone" on:click={SpeechSettings.start} />
+			{/if}
+		</span>
 		{#if $error}
 			{#if $error === 'not_recognized'}
 				<strong class="pa-chip">Sorry, I do not understand, could you repeat please?</strong>
@@ -55,6 +57,12 @@
 <style>
 	.page {
 		margin: 0 2em 2em 2em;
+	}
+	.icon {
+		color: var(--color-neutral-secondary-default);
+	}
+	.icon.on {
+		color: var(--color-neutral-primary-default);
 	}
 	.error {
 		color: var(--color-neutral-primary-lightest);

@@ -20,12 +20,12 @@
 
 <h2>Start the demo</h2>
 <p>
-	To enable speech recognition, you first have to click on the <Icon icon="volume-off" /> icon at the
-	top of the page.
+	To enable speech recognition, you first have to click on the greyed <Icon icon="microphone" /> icon
+	at the top of the page.
 </p>
 <p>
 	If the SpeechRecognition API is supported on your navigator, you will be prompted to accept the
-	usage of your microphone and the icon will be replace with this one: <Icon icon="volume" />
+	usage of your microphone and the icon will turn black.
 </p>
 <p>
 	Note: make sure to be in a relatively quite environment or the demo might be relatively

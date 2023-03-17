@@ -14,4 +14,7 @@
 	.clickable {
 		cursor: pointer;
 	}
+	svg {
+		fill: currentColor;
+	}
 </style>
