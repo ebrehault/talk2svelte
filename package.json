@@ -1,6 +1,6 @@
 {
 	"name": "talk2svelte",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -33,7 +33,7 @@
 		"vite": "^4.0.0"
 	},
 	"type": "module",
-	"dependencies": {
+	"peerDependencies": {
 		"rxjs": "^7.8.0"
 	},
 	"exports": {
