@@ -1,6 +1,6 @@
 {
 	"name": "talk2svelte",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -39,6 +39,7 @@
 	"exports": {
 		".": {
 			"types": "./index.d.ts",
+			"import": "./index.js",
 			"svelte": "./index.js"
 		}
 	}
