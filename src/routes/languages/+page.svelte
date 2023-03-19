@@ -1,17 +1,40 @@
 <script lang="ts">
+	import { speak } from '$lib';
 	import { speechCommand } from '$lib/execute';
 	import { SpeechSettings } from '$lib/store';
+	import { onMount } from 'svelte';
 
-	let lang = 'en-GB';
+	let lang = '';
 	let showDuck = false;
+	let refreshed = false;
 
+	const languages: { [key: string]: { code: string; label: string; word: string; help: string } } =
+		{
+			'en-GB': { code: 'en-GB', label: 'British English', word: 'duck', help: 'Say "duck"' },
+			'fr-CA': { code: 'fr-CA', label: 'French', word: 'canard', help: 'Dites "canard"' },
+			'it-IT': { code: 'it-IT', label: 'Italian', word: 'pattino', help: 'Dici "pattino"' },
+			'ja-JP': { code: 'ja-JP', label: 'Japanese', word: 'カモ', help: "'カモ' 言う" },
+			'es-ES': { code: 'es-ES', label: 'Spanish', word: 'pato', help: 'Diga "pato"' }
+		};
+
+	onMount(() => {
+		lang = 'en-GB';
+		setLang();
+	});
 	function setLang() {
-		SpeechSettings.setLang(lang);
+		refreshed = false;
 		showDuck = false;
+		setTimeout(() => {
+			SpeechSettings.setLang(lang);
+			refreshed = true;
+		}, 200);
 	}
 	function restore() {
 		lang = 'en-US';
 		SpeechSettings.setLang('en-US');
+	}
+	function help() {
+		speak(languages[lang].word);
 	}
 </script>
 
@@ -23,34 +46,24 @@
 <div>
 	<label for="lang">Language</label>
 	<select id="lang" bind:value={lang} on:change={setLang}>
-		<option value="en-GB">British English</option>
-		<option value="fr-FR">French</option>
-		<option value="it-IT">Italian</option>
-		<option value="ja-JP">Japanese</option>
-		<option value="es-ES">Spanish</option>
+		{#each Object.values(languages) as { code, label }}
+			<option value={code}>{label}</option>
+		{/each}
 	</select>
 </div>
 <div>
-	{#if lang === 'en-GB'}
-		<button use:speechCommand={'duck'} on:click={() => (showDuck = true)}>Say "duck"</button>
-	{/if}
-	{#if lang === 'fr-FR'}
-		<button use:speechCommand={'canard'} on:click={() => (showDuck = true)}>Dites "canard"</button>
-	{/if}
-	{#if lang === 'it-IT'}
-		<button use:speechCommand={'pattino'} on:click={() => (showDuck = true)}>Dici "pattino"</button>
-	{/if}
-	{#if lang === 'ja-JP'}
-		<button use:speechCommand={'カモ'} on:click={() => (showDuck = true)}>'カモ' 言う</button>
-	{/if}
-	{#if lang === 'es-ES'}
-		<button use:speechCommand={'pato'} on:click={() => (showDuck = true)}>Diga "pato"</button>
+	{#if refreshed}
+		<button use:speechCommand={languages[lang].word} on:click={() => (showDuck = true)}
+			>{languages[lang].help}</button
+		>
 	{/if}
 </div>
 
 {#if showDuck}
 	<div class="duck">🦆</div>
 {/if}
+
+<div>You don't know how to pronounce it? <button on:click={help}>Let me help</button></div>
 
 <div>
 	Note: as the navigation menu expects <code>en-US</code> commands, it will not work if you have

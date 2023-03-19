@@ -1,6 +1,6 @@
 # Talk2Svelte
 
-This library provides voice recognition for Svelte.
+This library provides voice recognition and voice synthesis for Svelte.
 
 It uses the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API).
 
@@ -17,6 +17,8 @@ More seriously about accessibility: obviously voice recognition may be not acces
 ## What does it do?
 
 Usual interactions like clicking on buttons or links or filling in text inputs can be done by speaking to the browser.
+
+Moreover, your app can speak to the user.
 
 ## Usage
 
@@ -117,7 +119,7 @@ The `SpeechStore` provides commands but also the full message recognized by the 
 ```html
 <script>
 	import { SpeechSettings, SpeechStore } from 'talk2svelte';
-	import { filter, skipUntil, takeUntil, tap } from 'rxjs';
+	import { filter } from 'rxjs';
 	import { onMount } from 'svelte';
 
 	let inputValue = '';
@@ -126,16 +128,22 @@ The `SpeechStore` provides commands but also the full message recognized by the 
 	onMount(() => {
 		SpeechSettings.declareCommand('record');
 		SpeechSettings.declareCommand('stop');
-		const subscription = SpeechStore.message
-			.pipe(
-				skipUntil(SpeechStore.currentCommand.pipe(filter((command) => command === 'record'))),
-				takeUntil(SpeechStore.currentCommand.pipe(filter((command) => command === 'stop')))
-			)
-			.subscribe((message) => (inputValue = message));
+		const subscriptions = [
+			SpeechStore.currentCommand.pipe(filter((command) => command === 'record')).subscribe(() => {
+				inputValue = '';
+				recording = true;
+			}),
+			SpeechStore.currentCommand.pipe(filter((command) => command === 'stop')).subscribe(() => {
+				recording = false;
+			}),
+			SpeechStore.message
+				.pipe(filter(() => recording === true))
+				.subscribe((message) => (inputValue = message))
+		];
 		return () => {
 			SpeechSettings.removeCommand('record');
 			SpeechSettings.removeCommand('stop');
-			subscription.unsubscribe();
+			subscriptions.map((sub) => sub.unsubscribe());
 		};
 	});
 </script>
@@ -144,6 +152,15 @@ The `SpeechStore` provides commands but also the full message recognized by the 
 
 Note: as you do not want the browser to fill in the text input with whatever the user is saying, you need to declare the commands "record" and "stop" to start and stop the recording.
 Declaring commands programmatically can be done with `SpeechSettings.declareCommand()`. And when the component is unmounted, you need to remove the commands with `SpeechSettings.removeCommand()` to make sure we do not interfere with commands declared in next pages.
+
+### Speak
+
+You can make your app speak with `speak.speak()`:
+
+```js
+import { speak } from 'talk2svelte';
+speak.speak('Hello world!');
+```
 
 ### Set the language
 

@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { speak } from '$lib';
 	import { speechCommand } from '$lib/execute';
 	import { SpeechSettings, SpeechStore } from '$lib/store';
-	import { filter, skipUntil, takeUntil, tap } from 'rxjs';
+	import { filter } from 'rxjs';
 	import { onMount } from 'svelte';
 
 	let origin = '';
@@ -32,30 +33,29 @@
 			currentCol++;
 		}
 	}
+	function repeat() {
+		speak(inputValue, 'en-GB');
+	}
 
 	onMount(() => {
 		SpeechSettings.declareCommand('record');
 		SpeechSettings.declareCommand('stop');
-		const subscription = SpeechStore.message
-			.pipe(
-				skipUntil(
-					SpeechStore.currentCommand.pipe(
-						filter((command) => command === 'record'),
-						tap(() => (recording = true))
-					)
-				),
-				takeUntil(
-					SpeechStore.currentCommand.pipe(
-						filter((command) => command === 'stop'),
-						tap(() => (recording = false))
-					)
-				)
-			)
-			.subscribe((message) => (inputValue = message));
+		const subscriptions = [
+			SpeechStore.currentCommand.pipe(filter((command) => command === 'record')).subscribe(() => {
+				inputValue = '';
+				recording = true;
+			}),
+			SpeechStore.currentCommand.pipe(filter((command) => command === 'stop')).subscribe(() => {
+				recording = false;
+			}),
+			SpeechStore.message
+				.pipe(filter(() => recording === true))
+				.subscribe((message) => (inputValue = message))
+		];
 		return () => {
 			SpeechSettings.removeCommand('record');
 			SpeechSettings.removeCommand('stop');
-			subscription.unsubscribe();
+			subscriptions.map((sub) => sub.unsubscribe());
 		};
 	});
 </script>
@@ -150,6 +150,10 @@
 	{/if}
 	<textarea>{inputValue}</textarea>
 </div>
+<p>
+	Say <button use:speechCommand={'repeat'} on:click={repeat}>Repeat</button> if you want to hear what
+	you just said.
+</p>
 
 <style>
 	.selected {
