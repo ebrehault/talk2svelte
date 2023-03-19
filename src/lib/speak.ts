@@ -7,7 +7,6 @@ export const speak = (text: string, lang?: string) => {
 			const utterance = new SpeechSynthesisUtterance(text);
 			utterance.rate = 1;
 			utterance.lang = lang || defaultLang;
-			console.log(utterance.voice);
 			window.speechSynthesis.speak(utterance);
 		}
 	});
