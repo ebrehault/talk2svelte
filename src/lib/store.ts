@@ -166,12 +166,14 @@ function stop() {
 }
 
 export const SpeechSettings = {
-	setLang: (newLang: string) => {
+	setLang: (newLang: string, start = true) => {
 		lang = newLang;
 		stop();
-		init();
+		init(start);
 		setTimeout(() => {
-			recognition.start();
+			if (start) {
+				recognition.start();
+			}
 			_lang.next(lang);
 		}, 500);
 	},

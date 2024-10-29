@@ -1,3 +1,9 @@
+# 0.1.4 (2024-10-29)
+
+### Bugfix
+
+- Fix french voice synthesis
+
 # 0.1.2 and 0.1.3 (2024-10-08)
 
 ### Bugfix
